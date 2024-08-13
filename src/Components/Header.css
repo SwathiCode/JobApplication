@@ -1,0 +1,507 @@
+.element-style {
+    font-size: 13px;
+    font-weight: 400;
+}
+.box--width {
+    font-weight: 500;
+    line-height: 0;
+    width: 93px;
+    height: 25px;
+    font-size: 13px;
+    border: none;
+    border-radius: 5px; 
+
+}
+.button--blue {
+    background-color: lightblue;
+    color: darkblue;
+}
+.button--green {
+    background-color: rgb(139, 172, 139);
+    color: darkgreen;
+}
+.button--brown {
+    background-color: rgb(199, 181, 173);
+    color: rgb(139, 63, 36);
+}
+.form--check {
+    display: block;
+    min-height: 1.5rem;
+    padding-left: 3.5em;
+    margin-bottom: .125rem;
+}
+.width-check {
+    width: 30px;
+    height: 15px;
+    
+}
+.dotted-line {
+    position: relative;
+  }
+  
+  .dotted-line::before,
+  .dotted-line::after {
+    content: '';
+    position: absolute;
+    top: -1px; /* Adjust to vertically center the dots */
+    width: 5px; /* Width of the dot */
+    height: 5px; /* Height of the dot */
+    background-color: #ccc; /* Color of the dot */
+    border-radius: 50%; /* Make the dot round */
+  }
+  
+  .dotted-line::before {
+    left: 20%; /* Position of the first dot */
+  }
+  
+  .dotted-line::after {
+    left: 80%; /* Position of the second dot */
+  }
+  .search {
+    margin-top: 20px;
+  }
+  
+  .search-1, .search-2 {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: white;
+
+  }
+  
+  .search-1 input, .search-2 input {
+    border: none;
+    outline: none;
+    flex-grow: 1;
+    padding: 5px;
+  }
+  
+  .search-2 button {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .search-2 button:hover {
+    background-color: #0056b3;
+  }
+  .font--weight {
+    font-size: 20px;
+    font-weight: 600;
+  }
+  
+  
+  .large-dot {
+    font-size: 1.5em; 
+    line-height: 0.5;
+  }
+  
+  .font-text {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .font--bold {
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .font-mute {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .white-icon {
+    fill: white;
+  }
+  .weight-text {
+    font-size: 30px;
+    font-weight: 500;
+  }
+  .button--select {
+    border-radius: 18px;
+    width: 125px;
+    height: 35px;
+  }
+  .color-font {
+    color: white;
+  }
+  .nav-item.nav-link:hover {
+    color: blue;
+  }
+  /* Custom styles to remove accordion borders */
+.custom-accordion .custom-accordion-item {
+    border: none;
+  }
+  
+  .custom-accordion-button {
+    border: none;
+    background: none;
+    box-shadow: none;
+  }
+  
+  .custom-accordion .accordion-collapse {
+    border: none;
+  }
+  
+  .custom-accordion .accordion-body {
+    border: none;
+    padding: 0; /* Adjust padding as needed */
+  }
+.button--accordian {
+    margin-left: -21px;
+    font-size: 16px;
+    font-weight: 600;
+}  
+.input--button {
+    border-radius: 25px;
+    width: 12%;
+    height: 51px;
+}
+.input--box {
+    border-radius: 35px;
+    height: 61px;
+}
+.range-container {
+    position: relative;
+    width: 99%;
+    margin-top: 17px; 
+  }
+  
+  .form-range {
+    width: 80%;
+    height: 8px;
+    background: #ddd;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+    margin: 0; 
+  }
+  
+  .form-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px; 
+    height: 25px;
+    background: #4CAF50;
+    cursor: pointer;
+    border-radius: 50%;
+    position: relative;
+  }
+  
+  .form-range::-moz-range-thumb {
+    width: 25px; 
+    height: 25px;
+    background: #4CAF50;
+    cursor: pointer;
+    border-radius: 50%;
+    position: relative;
+  }
+  
+  .range-value {
+    position: absolute;
+    top: 20px;
+    background: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 16px;
+    white-space: nowrap;
+    transform: translateX(-50%);
+  }
+  .navbar-brand svg {
+    color: blue;
+  }
+  .navbar-toggler {
+    background: white;
+  }
+  .nav-link {
+    color: white !important;
+  }
+  .color-font {
+    color: white;
+  }
+  @media (max-width: 768px) {
+    .navbar-brand,
+    .navbar-toggler {
+      margin: 0 auto;
+    }
+  }
+  .card--width {
+    border-radius: 10px;
+    width: 80%;
+    height: 94%;
+  }
+  .text--size {
+    margin-top: 30px;
+    font-size: 12px;
+  }
+  .btn-reg {
+    width: 24%;
+    font-size: 20px;
+    border-radius: 23px;
+    font-weight: 600;
+  }
+  .row {
+    display: flex;
+  }
+  
+  .col {
+    flex: 1;
+  }
+  
+  .mb0 {
+    margin-bottom: 0;
+  }
+  
+  .pad0 {
+    padding: 0;
+  }
+  
+  .img-wrapper {
+    position: relative;
+  }
+  
+  .user-pc-progress {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: auto;
+  }
+  
+  .bg {
+    stroke: #e6e6e6;
+  }
+  
+  .meter {
+    stroke: #4caf50;
+  }
+  
+  .photoTrigger {
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .nk-user-img {
+    display: block;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    margin: auto;
+  }
+  
+  .user-percentage {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+  }
+  
+  .photoBadge {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border-radius: 50%;
+    padding: 10px;
+  }
+  
+  .content-wrap {
+    text-align: center;
+  }
+  
+  .icon-wrap {
+    font-size: 20px;
+  }
+  
+  .typ-18Bold {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .txt-wrapper {
+    padding: 10px;
+  }
+  
+  .hdn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .fullname {
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .subhdn {
+    margin-top: 10px;
+  }
+  
+  .typ-14Regular {
+    font-size: 14px;
+  }
+  
+  .typ-14Medium {
+    font-size: 14px;
+    font-weight: medium;
+  }
+  
+  .detail-list {
+    margin-top: 10px;
+  }
+  
+  .detail-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  .with-cta {
+    display: flex;
+    align-items: center;
+  }
+  
+  .txt-col-p1 {
+    color: #4caf50;
+  }
+  
+  .typ-14Bold {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .ml10 {
+    margin-left: 10px;
+  }
+  
+  .mt15 {
+    margin-top: 15px;
+  }
+  
+  .pending-actions {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .pend-icon {
+    margin-right: 10px;
+  }
+  
+  .pend-act-txt {
+    flex: 1;
+  }
+  
+  .pend-item-wgt {
+    color: #4caf50;
+    font-weight: bold;
+  }
+  
+  .viewall-wrapper {
+    text-align: right;
+  }
+  
+.card-height {
+    width: 91%;
+    height: 225px;
+
+}
+ .icon {
+  width: 10px;
+  font-size: 15px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+.modal-head {
+  height: 126px;
+}
+.modal--font {
+  font-size: 20px;
+  font-weight: 600;
+}
+.modal-heading {
+  text-align: left;
+  padding-left: 0;
+  margin-left: 0;
+}
+.drop-style {
+  position: absolute;
+  inset: 0px auto auto 0px;
+  margin: 0px;
+  transform: translate3d(0px, 40px, 0px);
+  width: 80%;
+}
+.font--name {
+  font-size: 16px;
+    font-weight: 600;
+}
+.skill-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Adjust the gap between buttons as needed */
+}
+
+.skill-button {
+  padding: 10px 20px; /* Adjust the padding as needed */
+  border: none;
+
+  cursor: pointer;
+  margin-bottom: 10px; /* Adjust the bottom margin to control spacing between rows */
+  border-radius: 5px; /* Optional: Add border radius for rounded buttons */
+}
+
+.skill-button:hover {
+  background-color: #0056b3; /* Change to your desired hover color */
+}
+.item {
+  display: flex;
+  align-items: center;
+  font-family: 'Arial', sans-serif;
+  font-size: 14px;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: 3px;
+}
+
+
+.ver-line {
+  width: 1px;
+  height: 15px;
+  background-color: #000;
+  margin: 0 10px;
+}
+
+.typ-14Regular {
+  font-weight: normal;
+}
+.row.hori-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.col.s6 {
+  flex: 0 0 50%;
+  max-width: 50%;
+  padding: 0 15px;
+}
+
+.title {
+  font-weight: 600;
+  margin-bottom: 5px;
+  
+}
+
+.desc {
+  margin-bottom: 15px;
+}

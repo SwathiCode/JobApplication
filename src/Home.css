@@ -1,0 +1,13 @@
+.element-style {
+    font-size: 13px;
+    font-weight: 400;
+}
+.button--btn {
+    font-weight: 500;
+    line-height: 0;
+    width: 93px;
+    height: 25px;
+    background-color: lightblue;
+    color: darkblue;
+    font-size: 13px;
+}
