@@ -57,7 +57,7 @@
   .dotted-line::after {
     left: 80%; /* Position of the second dot */
   }
-  .search {
+  .search-btn {
     margin-top: 20px;
   }
   
@@ -504,4 +504,58 @@
 
 .desc {
   margin-bottom: 15px;
+}
+.widgetCont {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.prefill {
+  width: 100%;
+}
+
+ul.mb0 {
+  margin-bottom: 0;
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.collection {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.collection span {
+  display: inline-block;
+  text-align: left;
+  padding: 5px;
+}
+
+.collection .col {
+  margin-right: 10px;
+}
+
+.col.s3 {
+  width: 25%;
+}
+
+.col.s2 {
+  width: 15%;
+}
+
+.col.s1 {
+  width: 10%;
+}
+
+.icon.edit {
+  cursor: pointer;
+  color: #007bff;
+  text-align: right;
+  padding-right: 5px;
+}
+
+.right-align {
+  text-align: right;
 }

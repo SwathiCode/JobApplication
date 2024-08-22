@@ -1,0 +1,144 @@
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; 
+    padding: 20px; 
+    height: 100vh; 
+    cursor: pointer;
+}
+
+
+.column {
+    flex: 1; 
+    margin: 10px; 
+}
+
+
+.image-column img {
+    width: 550px; 
+    height: 500px; 
+}
+
+
+.description-column {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    text-align: left;
+}
+
+
+.textarea-container {
+    margin: 20px 0; 
+}
+
+
+.form-control {
+    height: 30px; 
+    width: 35%; 
+    box-sizing: border-box; 
+}
+
+.form-control1 {
+    height: 100px; 
+    width: 100%; 
+    box-sizing: border-box; 
+}
+
+
+.submit-button {
+    height: 30px; 
+    width: 70px;  
+    background-color: deeppink; 
+    color: white; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer;
+}
+
+.size {
+    font-size: xxx-large;
+}
+
+
+.textarea-container {
+    
+    margin: 10px 0;
+}
+
+.form-control1 {
+    width: 100%; 
+    height: 80px; 
+    border: 1px solid #ccc; 
+    padding: 10px; 
+    box-sizing: border-box; 
+    resize: none; 
+    overflow: hidden; 
+    background-color: #f9f9f9; 
+    font-family: Arial, sans-serif; 
+    font-size: 14px; 
+}
+
+
+
+
+
+.container1 mt-5{
+    display: flex;
+    justify-content: flex;
+    align-items: flex-start;
+    padding:259px;
+    height: 251vh;
+    margin-top: 1rm!important;
+    
+   
+    
+}
+
+.borderHighlight {
+    border: 2px black; 
+    border-radius: 0.25rem;    
+    padding: 1rem;            
+    margin-bottom: 1rem;      
+  }
+  
+.ht{
+    margin-top: 29px;
+}
+
+.mt5 {
+    margin-top: 2rem! important;
+}
+
+.container1 .borderHighlight {
+    border: 2px  black; 
+    border-radius: 0.25rem;    
+    padding: 1rem;            
+    margin-bottom: 1rem;      
+    transition: background-color 0.3s, box-shadow 0.3s; 
+  }
+  
+ .container1 .borderHighlight {
+    background-color: gainsboro; 
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2); 
+  }
+.form-control1::selection {
+    background: #339; 
+    color: #fff; 
+}
+
+
+.border-highlight {
+    border: 2px solid #007bff; /* Example highlight color */
+    background-color: #e7f0ff; /* Example highlight background color */
+    transition: 0.3s ease; /* Smooth transition for the highlight effect */
+  }
+  
+  
+
+
+
+
+
+  

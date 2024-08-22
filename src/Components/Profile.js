@@ -42,13 +42,17 @@ const Profile = () => {
   const [isFinished, setIsFinished] = useState(false);
   const [inputValue, setInputValue] = useState({ skillNames: '' });
   const [resumeHeadline, setResumeHeadline] = useState("");
-  const [addEducation, setAddEducation] = useState("");
+  const [addEducation, setAddEducation] = useState([]);
   const [addEmployment, setAddEmployment] = useState([]);
   const [addPersonal, setAddPersonal] = useState("");
   const [addCareer, setAddCareer] = useState("");
   const [addCertificate, setAddCertificate] = useState([]);
   const [addSummary, setAddSummary] = useState("");
-  const [addSkills, setAddSkills] = useState("");
+  const [addSkills, setAddSkills] = useState([]);
+  const [addProjects, setAddProjects] = useState([]);
+
+  // const [addITSkills, setaddITSkills] = useState([]);
+
 
   const [employmentDetails, setEmploymentDetails] = useState({
     curEmp: 'Yes',
@@ -132,7 +136,7 @@ const [jobDetails, setJobDetails] = useState({
   preferredLocation: '',
   expectedSalary: ''
 });
-const [selectedEmploymentIndex, setSelectedEmploymentIndex] = useState(null);
+const [editingIndex, setEditingIndex] = useState(null); 
 
   const years = Array.from({ length: 31 }, (_, i) => i); 
   const months = Array.from({ length: 13 }, (_, i) => i); 
@@ -183,25 +187,11 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
   };
   const EmploymentToggle = (index = null) => {
     if (index !== null) {
-      const employment = addEmployment[index];
-      setEmploymentDetails(employment);
-      setSelectedEmploymentIndex(index);
+      setEditingIndex(index);
+      setEmploymentDetails(addEmployment[index]); 
     } else {
-      setEmploymentDetails({
-        curEmp: '',
-        empType: '',
-        totalExperienceYears: '',
-        totalExperienceMonths: '',
-        company: '',
-        designation: '',
-        joiningYear: '',
-        joiningMonth: '',
-        currentSalary: '',
-        skillsUsed: '',
-        jobProfile: '',
-        noticePeriod: ''
-      });
-      setSelectedEmploymentIndex(null);
+      setEditingIndex(null);
+      setEmploymentDetails({}); 
     }
   
     setEmployment(!employment);
@@ -381,7 +371,7 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
   
     const fetchData = async () => {
       try {
-        const [skills, resume, education, experience, career, personal, certifications, summary,skillAdd] = await Promise.all([
+        const [skills, resume, education, experience, career, personal, certifications, summary,skillAdd, project] = await Promise.all([
           axios.get(APIURL+"/api/skill", { headers }),
           axios.get(APIURL+"/api/candidate/resume", { headers }),
           axios.get(APIURL+"/api/candidate/education", { headers }),
@@ -391,6 +381,8 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
           axios.get(APIURL+"/api/certifications", { headers }),
           axios.get(APIURL+"/api/candidate/2/bio", { headers }),
           axios.get(APIURL+"/api/candidate/skill/candidate/2", { headers }),
+          axios.get(APIURL+"/api/candidate/project", { headers }),
+
         ]);
         console.log("Bio data:", summary.data);
         console.log("certificate data:", certifications.data);
@@ -408,6 +400,8 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
         console.log("Testtttttt",JSON.parse(summary.data.bio).bio);
         setAddSummary(JSON.parse(summary.data.bio).bio);
         setAddSkills(skillAdd.data);
+        setAddProjects(project.data);
+
 
 
         console.log("Data fetched successfully");
@@ -449,12 +443,14 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
   const saveEmployeeData = () => {
     if (!candidateId) {
       console.error('Candidate ID is missing');
+      alert('Candidate ID is required.');
       return;
     }
 
     const candidateIdInt = parseInt(candidateId);
     if (isNaN(candidateIdInt)) {
       console.error('Invalid Candidate ID');
+      alert('Invalid Candidate ID provided.');
       return;
     }
 
@@ -474,15 +470,18 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
       noticePeriod: employmentDetails.noticePeriod,
     };
 
-    console.log('Employment Payload:', payload);
+    const url = editingIndex !== null 
+      ? `http://192.168.0.131:8080/api/candidate/experience/${addEmployment[editingIndex].id}` 
+       : 'http://192.168.0.131:8080/api/candidate/experience'; 
 
-    axios.post('http://192.168.0.131:8080/api/candidate/experience', payload)
+    axios.post(url, payload)
       .then(response => {
-        console.log('Employment details added:', response.data);
-        setEmployment(false); 
+        console.log('Employment details added/updated:', response.data);
+        setAddEmployment();
+        
       })
       .catch(error => {
-        console.error('Error adding employment details:', error);
+        console.error('Error adding/updating employment details:', error);
       });
   };
 
@@ -1210,54 +1209,46 @@ experienced  </label>
     </div>
   )}
 </div>
-
 <div className="card" style={{ width: '46.5rem', marginTop: '10px' }}>
-  <div className="card-body" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-    <strong>Employment</strong>
-    <div>
-      <a href="#" style={{ textDecoration: 'none' }}>
-          <h6 style={{ color: 'blue', cursor: 'pointer' }} onClick={EmploymentToggle}>
+      <div className="card-body" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <strong>Employment</strong>
+        <div>
+          <h6 style={{ color: 'blue', cursor: 'pointer' }} onClick={() => EmploymentToggle()}>
             Add Employment
           </h6>
-        </a>
-    
-    </div>
-  </div>
-  {addEmployment.length === 0 && (
-  <div className='row'>
-    <p style={{ marginLeft: '15px' }}>
-      Add details about your employment to showcase your professional experience.
-    </p>
-  </div>
-)}
-
-{addEmployment.map((employment, index) => (
-  <div key={index} className="card" style={{ marginBottom: '15px', width: "92%", marginLeft: "30px" }}>
-    <div className="card-body">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h4>{employment.designation}</h4>
-          <h6>{employment.company}</h6>
         </div>
-        <button className="btn btn-secondary" onClick={() => EmploymentToggle(index)}>
-          Edit
-        </button>
       </div>
-      <div className="item experienceType typ-14Regular">
-        <span className="truncate expType">{employment.empType}</span>
-        <span className="ver-line"></span>
-        <span className="truncate">{employment.totalExperienceYears} Years {employment.totalExperienceMonths} Months</span>
-      </div>
-      <p>{employment.noticePeriod}</p>
-      <p>{employment.jobProfile}</p>
-      <p>Skills Used: {employment.skillsUsed}</p>
-    </div>
-  </div>
-))}
-
-
-
-  {employment && (
+      {addEmployment.length === 0 && (
+        <div className='row'>
+          <p style={{ marginLeft: '15px' }}>
+            Add details about your employment to showcase your professional experience.
+          </p>
+        </div>
+      )}
+      {addEmployment.map((employment, index) => (
+        <div key={index} className="card" style={{ marginBottom: '15px', width: "92%", marginLeft: "30px" }}>
+          <div className="card-body">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h4>{employment.designation}</h4>
+                <h6>{employment.company}</h6>
+              </div>
+              <button className="btn btn-secondary" onClick={() => EmploymentToggle(index)}>
+                Edit
+              </button>
+            </div>
+            <div className="item experienceType typ-14Regular">
+              <span className="truncate expType">{employment.empType}</span>
+              <span className="ver-line"></span>
+              <span className="truncate">{employment.totalExperienceYears} Years {employment.totalExperienceMonths} Months</span>
+            </div>
+            <p>{employment.noticePeriod}</p>
+            <p>{employment.jobProfile}</p>
+            <p>Skills Used: {employment.skillsUsed}</p>
+          </div>
+        </div>
+      ))}
+     {employment && (
     <div className="modal fade show" tabIndex="-1" role="dialog" aria-labelledby="employmentModalLabel" aria-hidden="true" style={{ display: 'block' }}>
       <div className="modal-dialog modal-lg">
         <div className="modal-content">
@@ -1346,63 +1337,46 @@ experienced  </label>
       </div>
     </div>
   )}
-</div>
+    </div>
 
 
     <div className="card" style={{ width: "46.5rem", marginTop: "10px" }}>
-  <div className="card-body">
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <strong>Education</strong>
-      <div>
-        {addEducation.university ? (
-          <a href="#" style={{ textDecoration: 'none' }}>
-            <h6 style={{ color: 'blue', cursor: 'pointer', display: 'inline-block', marginRight: '10px' }} onClick={EducationToggle}>
-              Edit
-            </h6>
-          </a>
-        ) : (
-          <a href="#" style={{ textDecoration: 'none' }}>
-            <h6 style={{ color: 'blue', cursor: 'pointer' }} onClick={EducationToggle}>
-              Add Education
-            </h6>
-          </a>
-        )}
+    <div className="card-body" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <strong>Education</strong>
+        <div>
+          <h6 style={{ color: 'blue', cursor: 'pointer' }} onClick={() => EducationToggle()}>
+            Add Education
+          </h6>
+        </div>
       </div>
-    </div>
-
-    {!addEducation.university && (
-      <div className='row'>
-        <p style={{ marginLeft: "15px" }}>Add details about your education to show your academic background.</p>
-      </div>
-    )}
-
-    {addEducation.university && (
-      <div>
-        <p style={{ marginLeft: "15px" }}>
-          <strong>University/Institution:</strong> {addEducation.university}
-        </p>
-        <p style={{ marginLeft: "15px" }}>
-          <strong>Course:</strong> {addEducation.level}
-        </p>
-        <p style={{ marginLeft: "15px" }}>
-          <strong>Specialization:</strong> {addEducation.degree}
-        </p>
-        <p style={{ marginLeft: "15px" }}>
-          <strong>Starting Year:</strong> {addEducation.startYear}
-        </p>
-        <p style={{ marginLeft: "15px" }}>
-          <strong>Ending Year:</strong> {addEducation.endYear}
-        </p>
-        <p style={{ marginLeft: "15px" }}>
-          <strong>Course Type:</strong> {addEducation.courseType}
-        </p>
-        <p style={{ marginLeft: "15px" }}>
-          <strong>Grading System:</strong> {addEducation.grading}
-        </p>
-      </div>
-    )}
-  </div>
-
+      {addEducation.length === 0 && (
+        <div className='row'>
+          <p style={{ marginLeft: '15px' }}>
+            Add details about your employment to showcase your professional experience.
+          </p>
+        </div>
+      )}
+    {addEducation.map((education, index) => (
+        <div key={index} className="card" style={{ marginBottom: '15px', width: "92%", marginLeft: "30px" }}>
+          <div className="card-body">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h4>{education.degree}</h4>
+                <h6>{education.university}</h6>
+              </div>
+              <button className="btn btn-secondary" onClick={() => EducationToggle(index)}>
+                Edit
+              </button>
+            </div>
+            <div className="item experienceType typ-14Regular">
+              <span className="truncate expType">{education.startYear}-{education.endYear}</span>
+              <span className="ver-line"></span>
+              <span className="truncate">{education.courseType}</span>
+            </div>
+            
+          </div>
+        </div>
+      ))}
   {education && (
     <div className="modal fade show" tabIndex="-1" role="dialog" aria-labelledby="educationModalLabel" aria-hidden="true" style={{ display: 'block' }}>
       <div className="modal-dialog modal-lg">
@@ -1467,119 +1441,200 @@ experienced  </label>
   )}
 </div>
 
-
 <div className="card" style={{ width: "46.5rem", marginTop: "10px" }}>
-      <div className="card-body" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <strong>IT skills Add 10%</strong>
-        <a href="#" style={{ textDecoration: 'none' }}>
-          <h6 style={{ marginLeft: '5px', color: 'blue', cursor: 'pointer' }} onClick={detailsToggle}>Add details</h6>
-        </a>
-      </div>
-      <div className='row'>
-        <p style={{ marginLeft: "15px" }}>Show your technical expertise by mentioning software and skills you know</p>
-      </div>
-      {details && (
-          <div className="modal fade show" tabIndex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style={{ display: 'block' }}>
-    <div className="modal-dialog modal-lg">
-      <div className="modal-content">
-        <div className="modal-header" style={{ border: 'none' }}>
-          <button type="button" className="close" style={{ border: 'none' }} data-dismiss="modal" aria-label="Close">
-            <span className="icon" onClick={detailsToggle}>X</span>
-          </button>
+<div className="card-body" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <strong>IT Skills</strong>
+        <div>
+          <h6 style={{ color: 'blue', cursor: 'pointer' }} onClick={() => detailsToggle()}>
+            Add details
+          </h6>
         </div>
-        <div className="modal-body">
-          <form onSubmit={handleSubmit}>
-            <h6>IT Skills Add%</h6>
-            <p className="text-muted">Mention skills like programming languages (Java, Python), software (Microsoft Word, Excel) and more, to show your technical expertise.</p>
-            <div className="form-group">
-              <label htmlFor="name" className='font--name'>Skill / Software Name</label>
-              <input
-                type="text"
-                className="form-control"
-                id="name"
-                name="name"
-                placeholder="Skill / software name"
-                value={skillDetails.name}
-                onChange={handleSkillsChange}
-              />
-            </div>
-            <div className="row" style={{ marginTop: "20px" }}>
-              <div className="form-group col-md-5">
-                <label htmlFor="softVersion" className='font--name'>Software Version</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="softVersion"
-                  name="softVersion"
-                  placeholder="Software version"
-                  value={skillDetails.softVersion}
-                  onChange={handleSkillsChange}
-                />
-              </div>
-              <div className="form-group col-md-5">
-                <label htmlFor="lastUsed" className='font--name'>Last Used</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  id="lastUsed"
-                  placeholder="Enter Last used"
-                  value={skillDetails.lastUsed}
-                  onChange={handleSkillsChange}
-                />
-              </div>
-            </div>
-            <div className='row' style={{ marginTop: "15px" }}>
-              <h6>Experience</h6>
-              <div className='col-6'>
-                <div className="form-group" style={{ marginTop: "15px" }}>
-                  <label htmlFor="expYears" className='font--name'>Years</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="expYears"
-                    placeholder="Enter years"
-                    value={skillDetails.expYears}
-                    onChange={handleSkillsChange}
-                  />
-                </div>
-              </div>
-              <div className='col-6'>
-                <div className="form-group" style={{ marginTop: "15px" }}>
-                  <label htmlFor="expMonths" className='font--name'>Months</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="expMonths"
-                    placeholder="Enter months"
-                    value={skillDetails.expMonths}
-                    onChange={handleSkillsChange}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="modal-footer" style={{ border: 'none' }}>
-          <button type="submit" className="btn btn-primary">Save</button>
-          <button type="button" className="btn btn-secondary" onClick={detailsToggle}>Close</button>
-        </div>
-          </form>
-        </div>
-        
       </div>
-    </div>
-  </div>
-)}
+      {addSkills.length === 0 && (
+        <div className='row'>
+          <p style={{ marginLeft: '15px' }}>
+          Show your technical expertise by mentioning software and skills you know          </p>
+        </div>
+      )}
+      {/* {addSkills.map((skillAdd, index) => (
+        <div key={index} className="card" style={{ marginBottom: '15px', width: "92%", marginLeft: "30px" }}>
+          <div className="card-body">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
 
+                <h4>{skillAdd.softVersion}</h4>
+                <h6>{skillAdd.lastUsed}</h6>
+                <h6>{skillAdd.expYears} Years {skillAdd.expMonths} Months</h6>
+              </div>
+              <button className="btn btn-secondary" onClick={() => detailsToggle(index)}>
+                Edit
+              </button>
+            </div>
+            
+            
+           
+          </div>
+        </div>
+      ))}
+       */}
+<div className="widgetCont">
+  <div className="prefill">
+    <ul className="mb0">
+      <li className="collection">
+        <span className="col s3">Skills</span>
+        <span className="col s2">Version</span>
+        <span className="col s3">Last used</span>
+        <span className="col s3">Experience</span>
+        <span className="col s1"></span>
+      </li>
+      {addSkills.map((skillAdd, index) => (
+        <li key={index} className="collection" data-prefillid={skillAdd.prefillId}>
+          <span className="col s3">{skillAdd.skillName}</span>
+          <span className="col s2">{skillAdd.softVersion}</span>
+          <span className="col s3">{skillAdd.lastUsed}</span>
+          <span className="col s3">{skillAdd.expYears} Years {skillAdd.expMonths} Months</span>
+          <span
+            tabIndex="0"
+            className="col icon edit right-align"
+            onClick={() => detailsToggle(index)}
+          >
+            Edit
+          </span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+  
+
+      {details && (
+        <div className="modal fade show" tabIndex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style={{ display: 'block' }}>
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header" style={{ border: 'none' }}>
+                <button type="button" className="close" style={{ border: 'none' }} data-dismiss="modal" aria-label="Close">
+                  <span className="icon" onClick={detailsToggle}>X</span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <form onSubmit={handleSubmit}>
+                  <h6>IT Skills Add%</h6>
+                  <p className="text-muted">Mention skills like programming languages (Java, Python), software (Microsoft Word, Excel) and more, to show your technical expertise.</p>
+                  <div className="form-group">
+                    <label htmlFor="name" className='font--name'>Skill / Software Name</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="name"
+                      name="name"
+                      placeholder="Skill / software name"
+                      value={skillDetails.name}
+                      onChange={handleSkillsChange}
+                    />
+
+                  </div>
+                  <div className="row" style={{ marginTop: "20px" }}>
+                    <div className="form-group col-md-5">
+                      <label htmlFor="softVersion" className='font--name'>Software Version</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="softVersion"
+                        name="softVersion"
+                        placeholder="Software version"
+                        value={skillDetails.softVersion}
+                        onChange={handleSkillsChange}
+                      />
+                    </div>
+                    <div className="form-group col-md-5">
+                      <label htmlFor="lastUsed" className='font--name'>Last Used</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        id="lastUsed"
+                        placeholder="Enter Last used"
+                        value={skillDetails.lastUsed}
+                        onChange={handleSkillsChange}
+                      />
+                    </div>
+                  </div>
+                  <div className='row' style={{ marginTop: "15px" }}>
+                    <h6>Experience</h6>
+                    <div className='col-6'>
+                      <div className="form-group" style={{ marginTop: "15px" }}>
+                        <label htmlFor="expYears" className='font--name'>Years</label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          id="expYears"
+                          placeholder="Enter years"
+                          value={skillDetails.expYears}
+                          onChange={handleSkillsChange}
+                        />
+                      </div>
+                    </div>
+                    <div className='col-6'>
+                      <div className="form-group" style={{ marginTop: "15px" }}>
+                        <label htmlFor="expMonths" className='font--name'>Months</label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          id="expMonths"
+                          placeholder="Enter months"
+                          value={skillDetails.expMonths}
+                          onChange={handleSkillsChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="modal-footer" style={{ border: 'none' }}>
+                    <button type="submit" className="btn btn-primary">Save</button>
+                    <button type="button" className="btn btn-secondary" onClick={detailsToggle}>Close</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
     <div className="card" style={{ width: "46.5rem", marginTop: "10px" }}>
-        <div className="card-body" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <strong>Projects</strong>
-          <a href="#" style={{ textDecoration: 'none' }}>
-            <h6 style={{ marginLeft: '5px', color: 'blue', cursor: 'pointer' }} onClick={projectToggle}>Add projects</h6>
-          </a>
+    <div className="card-body" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <strong>Projects</strong>
+        <div>
+          <h6 style={{ color: 'blue', cursor: 'pointer' }} onClick={() => projectToggle()}>
+            Add projects
+          </h6>
         </div>
+      </div>
+      {addProjects.length === 0 && (
         <div className='row'>
-          <p style={{ marginLeft: "15px" }}>Stand out to employers by adding details about projects that you have done so far</p>
+          <p style={{ marginLeft: '15px' }}>
+          Stand out to employers by adding details about projects that you have done so far          </p>
         </div>
+      )}
+      {addProjects.map((project, index) => (
+        <div key={index} className="card" style={{ marginBottom: '15px', width: "92%", marginLeft: "30px" }}>
+          <div className="card-body">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h4>{project.projectTitle}</h4>
+                <h6>{project.client}</h6>
+              </div>
+              <button className="btn btn-secondary" onClick={() => projectToggle(index)}>
+                Edit
+              </button>
+            </div>
+            <div className="item experienceType typ-14Regular">
+              <span className="truncate">{project.totalExperienceYears} Years {project.totalExperienceMonths} Months</span>
+            </div>
+            <p>{project.projectDetails}</p>
+           
+          </div>
+        </div>
+      ))}
+
         {project && (
           <div className="modal fade show" tabIndex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style={{ display: 'block' }}>
             <div className="modal-dialog modal-lg">
@@ -2623,7 +2678,6 @@ Patent pending      </label>
       </div>
     )}
   </div>
-
   {personalDetails && (
     <div className="modal fade show" tabIndex="-1" role="dialog" aria-labelledby="personalModalLabel" aria-hidden="true" style={{ display: 'block' }}>
       <div className="modal-dialog modal-lg">
@@ -2635,13 +2689,50 @@ Patent pending      </label>
           </div>
           <div className="modal-body">
             <form onSubmit={handleSubmit}>
-              {/* Form groups for editing personal details */}
-              {/* Adjust font sizes as needed */}
               <div className="form-group" style={{ marginTop: "15px" }}>
-                <label htmlFor="gender" className='font--name' style={{ fontSize: '14px' }}>Gender</label>
+                <label htmlFor="gender" className='font--name'>Gender</label>
                 <input type="text" className="form-control" id="gender" placeholder="Enter gender" value={formData.gender} onChange={handlePersonalChange}/>
               </div>
-              {/* Repeat for other fields */}
+              <div className="form-group" style={{ marginTop: "15px" }}>
+                <label htmlFor="maritalStatus" className='font--name'>Marital Status</label>
+                <input type="text" className="form-control" id="maritalStatus" placeholder="Enter marital status" value={formData.maritalStatus} onChange={handlePersonalChange}/>
+              </div>
+              <div className="form-group" style={{ marginTop: "15px" }}>
+                <label htmlFor="dob" className='font--name'>Date of Birth</label>
+                <input type="date" className="form-control" id="dob" value={formData.dob} onChange={handlePersonalChange}/>
+              </div>
+              <div className="form-group" style={{ marginTop: "15px" }}>
+                <label htmlFor="category" className='font--name'>Category</label>
+                <input type="text" className="form-control" id="category" placeholder="Enter category" value={formData.category} onChange={handlePersonalChange}/>
+              </div>
+              <div className="form-group" style={{ marginTop: "15px" }}>
+                <label htmlFor="disability" className='font--name'>Disability</label>
+                <input type="text" className="form-control" id="disability" placeholder="Enter disability status" value={formData.disability} onChange={handlePersonalChange}/>
+              </div>
+              <div className="form-group" style={{ marginTop: "15px" }}>
+                <label htmlFor="careerBreak" className='font--name'>Career Break</label>
+                <input type="text" className="form-control" id="careerBreak" placeholder="Enter career break status" value={formData.careerBreak} onChange={handlePersonalChange}/>
+              </div>
+              <div className="form-group" style={{ marginTop: "15px" }}>
+                <label htmlFor="address" className='font--name'>Address</label>
+                <input type="text" className="form-control" id="address" placeholder="Enter address" value={formData.address} onChange={handlePersonalChange}/>
+              </div>
+              <div className="form-group" style={{ marginTop: "15px" }}>
+                <label htmlFor="homeTown" className='font--name'>Home Town</label>
+                <input type="text" className="form-control" id="homeTown" placeholder="Enter home town" value={formData.homeTown} onChange={handlePersonalChange}/>
+              </div>
+              <div className="form-group" style={{ marginTop: "15px" }}>
+                <label htmlFor="pincode" className='font--name'>Pincode</label>
+                <input type="text" className="form-control" id="pincode" placeholder="Enter pincode" value={formData.pincode} onChange={handlePersonalChange}/>
+              </div>
+              <div className="form-group" style={{ marginTop: "15px" }}>
+                <label htmlFor="workPermitUsa" className='font--name'>Work Permit USA</label>
+                <input type="text" className="form-control" id="workPermitUsa" placeholder="Enter work permit status for USA" value={formData.workPermitUsa} onChange={handlePersonalChange}/>
+              </div>
+              <div className="form-group" style={{ marginTop: "15px" }}>
+                <label htmlFor="workPermitOther" className='font--name'>Work Permit Other</label>
+                <input type="text" className="form-control" id="workPermitOther" placeholder="Enter work permit status for other countries" value={formData.workPermitOther} onChange={handlePersonalChange}/>
+              </div>
               <div className="modal-footer" style={{ border: 'none' }}>
                 <button type="submit" className="btn btn-primary">Save</button>
                 <button type="button" className="btn btn-secondary" onClick={PersonalToggle}>Close</button>

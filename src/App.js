@@ -7,7 +7,8 @@ import Home from './Components/Home';
 import Login from './Components/Login';
 import Profile from './Components/Profile';
 import SkillForm from './Components/skillForm';
-
+import Requirement from './Components/Requirement';
+import ProjectRequirement from './Components/ProjectRequirement';
 
 function App() {
   return (
@@ -20,6 +21,9 @@ function App() {
        <Route path="/profile" element={<Profile />} />
        <Route path="/profile/:candidateId" element={<Profile />} />
        <Route path="/skill/:candidateId" element={<SkillForm />} />
+       <Route path="/Requirement" element={<Requirement />} />
+       <Route path="/ProjectRequirement" element={<ProjectRequirement />} />
+
 
       </Routes>
     </Router>
