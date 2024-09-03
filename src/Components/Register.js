@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { setToken } from '../utils/User';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -19,12 +20,14 @@ const Register = () => {
     const handleSubmit = (e) => {
       e.preventDefault();
   
-      axios.post('http://192.168.0.119:8080/api/user', formData)
+      axios.post('http://192.168.0.111:8080/api/user', formData)
           .then(response => {
               console.log('Response data:', response.data); 
               const candidateId = response.data.id; 
               if (candidateId) {
                   navigate(`/profile/${candidateId}`); 
+                  const token = response.data.token;
+                  setToken(token);
               } else {
                   console.error('Candidate ID not found in response data');
               }

@@ -559,3 +559,20 @@ ul.mb0 {
 .right-align {
   text-align: right;
 }
+.Font--size {
+  font-size: 20px;
+  font-weight: 700;
+}
+.stars {
+  color:silver;
+  font-size: 24px; 
+}
+.text--weight {
+  font-size: 17px;
+  font-weight: 600;
+}
+.btn-outline-black {
+  border: 2px solid black;
+  color: black;
+}
+

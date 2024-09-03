@@ -9,6 +9,8 @@ import Profile from './Components/Profile';
 import SkillForm from './Components/skillForm';
 import Requirement from './Components/Requirement';
 import ProjectRequirement from './Components/ProjectRequirement';
+import Detailspage from './Components/Detailspage';
+import SideNav from './Components/SideNav';
 
 function App() {
   return (
@@ -20,10 +22,11 @@ function App() {
        <Route path="/login" element={<Login />} />
        <Route path="/profile" element={<Profile />} />
        <Route path="/profile/:candidateId" element={<Profile />} />
-       <Route path="/skill/:candidateId" element={<SkillForm />} />
+       <Route path="/skill" element={<SkillForm />} />
        <Route path="/Requirement" element={<Requirement />} />
        <Route path="/ProjectRequirement" element={<ProjectRequirement />} />
-
+       <Route path="/details" element={<Detailspage />} />
+       <Route path="/sidenav" element={<SideNav />} />
 
       </Routes>
     </Router>

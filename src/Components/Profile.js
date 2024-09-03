@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
 import { APIURL } from './constants';
+import { Editor } from '@tinymce/tinymce-react';
 
 const Profile = () => {
   const { candidateId } = useParams();
@@ -41,7 +42,7 @@ const Profile = () => {
   const [isPatentIssued, setIsPatentIssued] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [inputValue, setInputValue] = useState({ skillNames: '' });
-  const [resumeHeadline, setResumeHeadline] = useState("");
+  const [resumeHeadline, setResumeHeadline] = useState(""); 
   const [addEducation, setAddEducation] = useState([]);
   const [addEmployment, setAddEmployment] = useState([]);
   const [addPersonal, setAddPersonal] = useState("");
@@ -50,6 +51,7 @@ const Profile = () => {
   const [addSummary, setAddSummary] = useState("");
   const [addSkills, setAddSkills] = useState([]);
   const [addProjects, setAddProjects] = useState([]);
+  const [addSelectedSkills, setAddSelectedSkills] = useState([]);
 
   // const [addITSkills, setaddITSkills] = useState([]);
 
@@ -185,16 +187,8 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
   const KeyskillToggle = () => {
     setIsKeyskill(!isKeyskill);
   };
-  const EmploymentToggle = (index = null) => {
-    if (index !== null) {
-      setEditingIndex(index);
-      setEmploymentDetails(addEmployment[index]); 
-    } else {
-      setEditingIndex(null);
-      setEmploymentDetails({}); 
-    }
-  
-    setEmployment(!employment);
+  const EmploymentToggle = () => {
+     setEmployment(!employment);
   };
   
   const EducationToggle = () => {
@@ -282,6 +276,10 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
 
   const removeSkill = (skill) => {
     setSelectedSkills(selectedSkills.filter(s => s !== skill));
+  };
+  const removeSkills = (skillName) => {
+    const updatedSkills = skills.filter(skill => skill.name !== skillName);
+    setSkills(updatedSkills); 
   };
   const handleCheckboxChange = () => {
     setIsCurrentlyWorking(!isCurrentlyWorking);
@@ -381,13 +379,15 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
           axios.get(APIURL+"/api/certifications", { headers }),
           axios.get(APIURL+"/api/candidate/2/bio", { headers }),
           axios.get(APIURL+"/api/candidate/skill/candidate/2", { headers }),
-          axios.get(APIURL+"/api/candidate/project", { headers }),
+           axios.get(APIURL+"/api/projects", { headers }),
 
         ]);
         console.log("Bio data:", summary.data);
         console.log("certificate data:", certifications.data);
-        console.log(" Skills adding:", skillAdd.data);
+        console.log(" Skills adding:", skills.data);
+        console.log(" resume adding:", resume.data[0].headline);
         console.log(" resume adding:", resume.data);
+
         console.log(" experience adding:", experience.data);
 
         setSkills(skills.data);
@@ -397,7 +397,7 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
         setAddCareer(career.data[0]);
         setAddPersonal(personal.data[0]);
         setAddCertificate(certifications.data);
-        console.log("Testtttttt",JSON.parse(summary.data.bio).bio);
+        // console.log("Testtttttt",JSON.parse(summary.data.bio).bio);
         setAddSummary(JSON.parse(summary.data.bio).bio);
         setAddSkills(skillAdd.data);
         setAddProjects(project.data);
@@ -431,8 +431,8 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
     };
   
     console.log('Payload:', payload);
-  
-    axios.post('http://192.168.0.131:8080/api/candidate/skill/add', payload)
+
+    axios.post(APIURL+"/api/candidate/skill/add", payload)
       .then(response => {
         console.log('Skills added:', response.data);
       })
@@ -443,14 +443,12 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
   const saveEmployeeData = () => {
     if (!candidateId) {
       console.error('Candidate ID is missing');
-      alert('Candidate ID is required.');
       return;
     }
 
     const candidateIdInt = parseInt(candidateId);
     if (isNaN(candidateIdInt)) {
       console.error('Invalid Candidate ID');
-      alert('Invalid Candidate ID provided.');
       return;
     }
 
@@ -470,18 +468,15 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
       noticePeriod: employmentDetails.noticePeriod,
     };
 
-    const url = editingIndex !== null 
-      ? `http://192.168.0.131:8080/api/candidate/experience/${addEmployment[editingIndex].id}` 
-       : 'http://192.168.0.131:8080/api/candidate/experience'; 
+    console.log('Employment Payload:', payload);
 
-    axios.post(url, payload)
+    axios.post(APIURL+"/api/candidate/experience", payload)
       .then(response => {
-        console.log('Employment details added/updated:', response.data);
-        setAddEmployment();
-        
+        console.log('Employment details added:', response.data);
+        setEmployment(false); 
       })
       .catch(error => {
-        console.error('Error adding/updating employment details:', error);
+        console.error('Error adding employment details:', error);
       });
   };
 
@@ -511,7 +506,7 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
 
     console.log('Education Payload:', payload);
 
-    axios.post('http://192.168.0.131:8080/api/candidate/education', payload)
+    axios.post(APIURL+"/api/candidate/education", payload)
       .then(response => {
         console.log('Education details added:', response.data);
         setEducation(false); 
@@ -530,7 +525,7 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
       bio: profileSummary,
     };
 
-    axios.post(`http://192.168.0.131:8080/api/candidate/bio/${candidateId}`, payload)
+    axios.post(APIURL+"/api/candidate/bio/${candidateId}", payload)
       .then(response => {
         console.log('Profile summary added:', response.data);
         setSummary(false); 
@@ -556,7 +551,7 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
       
     };
 
-      axios.post(`http://192.168.0.131:8080/api/candidate/resume`, payload)
+      axios.post(APIURL+"/api/candidate/resume", payload)
       .then(response => {
         console.log('resume added:', response.data);
         setSummary(false); 
@@ -590,7 +585,7 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
 
     console.log('skills Payload:', payload);
    
-  axios.post('http://192.168.0.131:8080/api/skill', payload)
+  axios.post(APIURL+"/api/skill", payload)
       .then(response => {
         console.log('skills added:', response.data);
       })
@@ -622,7 +617,7 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
     };
 
     console.log('project Payload:', payload);
-    axios.post('http://192.168.0.111:8080/api/projects', payload)
+    axios.post(APIURL+"/api/projects", payload)
       .then(response => {
         console.log('Project added:', response.data);
       })
@@ -653,7 +648,7 @@ const yearOptions = Array.from({ length: currentYear - 1999 }, (v, k) => current
       certificationValidityEndYear: certificationDetails.certificationValidityEndYear
     };
 
-    axios.post('http://192.168.0.131:8080/api/certifications', payload)
+    axios.post(APIURL+"/api/certifications", payload)
       .then(response => {
         console.log('Certification added:', response.data);
       })
@@ -690,7 +685,7 @@ const savePersonalDetails = (e) => {
 
   console.log('Personal Details Payload:', payload);
 
-  axios.post('http://192.168.0.131:8080/api/personal/details', payload)
+  axios.post(APIURL+"/api/personal/details", payload)
     .then(response => {
       console.log('Personal details added:', response.data);
     })
@@ -724,7 +719,7 @@ const saveJobDetails = () => {
 
   console.log('Job Details Payload:', payload);
 
-  axios.post('http://192.168.0.131:8080/api/careers', payload)
+  axios.post(APIURL+"/api/careers", payload)
     .then(response => {
       console.log('Job details added:', response.data);
     })
@@ -943,7 +938,12 @@ experienced  </label>
             <div className="card" >
   <div className="card-body">
    <strong>Quick links</strong>
-   <div className='row' style={{ marginTop: '20px' }}>
+   <div className='row' style={{marginTop:"10px"}}>
+      <div className='col-8'>
+        <p onClick={handleLogout} style={{ cursor: 'pointer' }}>Home</p>
+      </div>
+    </div>
+   <div className='row' >
 <div className='col-8'>
     <p>Resume</p>
     
@@ -1029,11 +1029,7 @@ experienced  </label>
 </div>
 
 </div>
-<div className='row'>
-      <div className='col-8'>
-        <p onClick={handleLogout} style={{ cursor: 'pointer' }}>Logout</p>
-      </div>
-    </div>
+
   </div>
 </div>
             </div>
@@ -1119,19 +1115,33 @@ experienced  </label>
   <div className="row">
     <p style={{ marginLeft: '15px' }}>Recruiters look for candidates with specific key skills</p>
   </div>
-
-{/*  
-  {selectedSkills.length > 0 && (
-    <div style={{ marginLeft: '15px' }}>
-      {selectedSkills.map((skill, index) => (
-        <span key={index} className="badge badge-pill badge-primary" style={{ margin: '5px', padding: '10px', backgroundColor: '#007bff', color: '#fff' }}>
-          {skill}
-        </span>
-      ))}
+  
+  <div  style={{ marginBottom: '15px', width: "92%", marginLeft: "22px" }}>
+    <div >
+      {skills.length === 0 ? (
+        <div className='row'>
+          <p style={{ marginLeft: '15px' }}>
+            Show your technical expertise by mentioning software and skills you know.
+          </p>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+          {skills.map((skillAdd, index) => (
+            <button
+              key={index}
+              type="button"
+              className="skill-button btn btn-outline-dark"
+              onClick={() => removeSkills(skillAdd.name)}
+              style={{ margin: '5px' }}
+            >
+              {skillAdd.name} x
+            </button>
+          ))}
+        </div>
+      )}
     </div>
-  )} */}
-
-
+  </div>
+  
   {isKeyskill && (
     <div className="modal fade show" tabIndex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style={{ display: 'block' }}>
       <div className="modal-dialog modal-lg">
@@ -1158,10 +1168,10 @@ experienced  </label>
                     <span style={{ marginLeft: '10px', cursor: 'pointer' }}>x</span>
                   </button>
                 ))}
-                <input
+                 <input
                   type="text"
                   className="form-control"
-                  id="exampleInputSkill"
+                  id="skillNames"
                   placeholder="Add skills"
                   value={inputValue.skillNames}
                   onChange={handleChange}
@@ -1292,6 +1302,7 @@ experienced  </label>
                   <label htmlFor="totalExperienceMonths" className='font--name'>Total Experience (Months)</label>
                   <input type="number" className="form-control" id="totalExperienceMonths" placeholder="Enter total experience months" value={employmentDetails.totalExperienceMonths} onChange={handleEmploymentChange} />
                 </div>
+              
               </div>
               <div className="form-group" style={{ marginTop: '15px' }}>
                 <label htmlFor="company" className='font--name'>Current Company Name</label>
@@ -1338,6 +1349,8 @@ experienced  </label>
     </div>
   )}
     </div>
+
+
 
 
     <div className="card" style={{ width: "46.5rem", marginTop: "10px" }}>
@@ -1450,22 +1463,36 @@ experienced  </label>
           </h6>
         </div>
       </div>
-      {addSkills.length === 0 && (
+      {skills.length === 0 && (
         <div className='row'>
           <p style={{ marginLeft: '15px' }}>
           Show your technical expertise by mentioning software and skills you know          </p>
         </div>
       )}
-      {/* {addSkills.map((skillAdd, index) => (
-        <div key={index} className="card" style={{ marginBottom: '15px', width: "92%", marginLeft: "30px" }}>
-          <div className="card-body">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
+      <div className="prefill">
+  <ul className="mb0">
+    <li className="collection" style={{marginLeft:"40px"}}>
+      <span className="col s3">Skills</span>
+      <span className="col s2">Version</span>
+      <span className="col s3">Last used</span>
+      <span className="col s3" style={{marginLeft:"34px"}}>Experience</span>
+      <span className="col s1"></span>
+    </li>
 
-                <h4>{skillAdd.softVersion}</h4>
-                <h6>{skillAdd.lastUsed}</h6>
-                <h6>{skillAdd.expYears} Years {skillAdd.expMonths} Months</h6>
-              </div>
+  </ul>
+</div>
+      {skills.map((skillAdd, index) => (
+        <div key={index} className="card" style={{ marginBottom: '15px', width: "92%", marginLeft: "22px" }}>
+          <div className="card-body">
+         
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            
+            <span className="col s3">{skillAdd.name}</span>
+        <span className="col s2">{skillAdd.softVersion}</span>
+        <span className="col s3">{skillAdd.lastUsed}</span>
+        <span className="col s3">{`${skillAdd.expYears} Years ${skillAdd.expMonths} Months`}</span>
+
+
               <button className="btn btn-secondary" onClick={() => detailsToggle(index)}>
                 Edit
               </button>
@@ -1476,35 +1503,7 @@ experienced  </label>
           </div>
         </div>
       ))}
-       */}
-<div className="widgetCont">
-  <div className="prefill">
-    <ul className="mb0">
-      <li className="collection">
-        <span className="col s3">Skills</span>
-        <span className="col s2">Version</span>
-        <span className="col s3">Last used</span>
-        <span className="col s3">Experience</span>
-        <span className="col s1"></span>
-      </li>
-      {addSkills.map((skillAdd, index) => (
-        <li key={index} className="collection" data-prefillid={skillAdd.prefillId}>
-          <span className="col s3">{skillAdd.skillName}</span>
-          <span className="col s2">{skillAdd.softVersion}</span>
-          <span className="col s3">{skillAdd.lastUsed}</span>
-          <span className="col s3">{skillAdd.expYears} Years {skillAdd.expMonths} Months</span>
-          <span
-            tabIndex="0"
-            className="col icon edit right-align"
-            onClick={() => detailsToggle(index)}
-          >
-            Edit
-          </span>
-        </li>
-      ))}
-    </ul>
-  </div>
-</div>
+  
 
   
 
@@ -1627,7 +1626,7 @@ experienced  </label>
               </button>
             </div>
             <div className="item experienceType typ-14Regular">
-              <span className="truncate">{project.totalExperienceYears} Years {project.totalExperienceMonths} Months</span>
+              <span className="truncate">{project.workYear} Years {project.workMonth} Months</span>
             </div>
             <p>{project.projectDetails}</p>
            
@@ -1660,87 +1659,39 @@ experienced  </label>
                       <h6>Status</h6>
                       <div className="col">
                         <div className="form-check">
-                          <input className="form-check-input" type="checkbox" id="statusInProgress" checked={!isFinished} onChange={handleProjectChange} />
+                          <input className="form-check-input" type="checkbox" id="statusInProgress" checked={isFinished} onChange={handleProjectChange} />
                           <label className="form-check-label" htmlFor="statusInProgress">In Progress</label>
                         </div>
                       </div>
                       <div className="col">
                         <div className="form-check">
-                          <input className="form-check-input" type="checkbox" id="statusFinished" checked={isFinished} onChange={handleProjectChange} />
+                          <input className="form-check-input" type="checkbox" id="statusFinished" checked={!isFinished} onChange={handleProjectChange} />
                           <label className="form-check-label" htmlFor="statusFinished">Finished</label>
                         </div>
                       </div>
                     </div>
-                    <div className='row' style={{ marginTop: "15px" }}>
-                      <h6>Worked from</h6>
-                      <div className='col-6'>
-                        <div className="dropdown">
-                          <button className="btn btn-secondary dropdown-toggle" style={{ backgroundColor: "white", color: "black", width: "80%", textAlign: "start" }} type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                            {selectYear}
-                          </button>
-                          <ul className="dropdown-menu" style={{ width: "80%" }} aria-labelledby="dropdownMenuButton1">
-                            {List.map(year => (
-                              <li key={year}>
-                                <a className="dropdown-item" href="#" onClick={() => handleSelectYear(year)}>
-                                  {year}
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                      <div className='col-6'>
-                        <div className="dropdown">
-                          <button className="btn btn-secondary dropdown-toggle" style={{ backgroundColor: "white", color: "black", width: "80%", textAlign: "start" }} type="button" id="dropdownMenuButtonByMonth1" data-bs-toggle="dropdown" aria-expanded="false">
-                            {selectMonth}
-                          </button>
-                          <ul className="dropdown-menu" style={{ width: "80%" }} aria-labelledby="dropdownMenuButtonByMonth1">
-                            {month.map((months, index) => (
-                              <li key={index}>
-                                <a className="dropdown-item" href="#" onClick={() => handleSelectMonth(months)}>
-                                  {months}
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
+                    <div className='row' style={{ marginTop: '15px' }}>
+                <div className='col-6'>
+                  <label htmlFor="workYear" className='font--name'>Total Experience (Years)</label>
+                  <input type="number" className="form-control" id="workYear" placeholder="Enter total experience years" value={projectDescription.workYear} onChange={handleProjectChange} />
+                </div>
+                <div className='col-6'>
+                  <label htmlFor="workMonth" className='font--name'>Total Experience (Months)</label>
+                  <input type="number" className="form-control" id="workMonth" placeholder="Enter total experience months" value={projectDescription.workMonth} onChange={handleProjectChange} />
+                </div>
+              
+              </div>
                     {isFinished && (
-                      <div className='row' style={{ marginTop: "15px" }}>
-                        <h6>Worked till</h6>
+                        <div className='row' style={{ marginTop: '15px' }}>
                         <div className='col-6'>
-                          <div className="dropdown">
-                            <button className="btn btn-secondary dropdown-toggle" style={{ backgroundColor: "white", color: "black", width: "80%", textAlign: "start" }} type="button" id="dropdownMenuButtonToYear" data-bs-toggle="dropdown" aria-expanded="false">
-                              {selectYear}
-                            </button>
-                            <ul className="dropdown-menu" style={{ width: "80%" }} aria-labelledby="dropdownMenuButtonToYear">
-                              {List.map(year => (
-                                <li key={year}>
-                                  <a className="dropdown-item" href="#" onClick={() => handleSelectYear(year)}>
-                                    {year}
-                                  </a>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
+                          <label htmlFor="workYear" className='font--name'>Total Experience (Years)</label>
+                          <input type="number" className="form-control" id="workYear" placeholder="Enter total experience years" value={projectDescription.workYear} onChange={handleProjectChange} />
                         </div>
                         <div className='col-6'>
-                          <div className="dropdown">
-                            <button className="btn btn-secondary dropdown-toggle" style={{ backgroundColor: "white", color: "black", width: "80%", textAlign: "start" }} type="button" id="dropdownMenuButtonToMonth" data-bs-toggle="dropdown" aria-expanded="false">
-                              {selectMonth}
-                            </button>
-                            <ul className="dropdown-menu" style={{ width: "80%" }} aria-labelledby="dropdownMenuButtonToMonth">
-                              {month.map((months, index) => (
-                                <li key={index}>
-                                  <a className="dropdown-item" href="#" onClick={() => handleSelectMonth(months)}>
-                                    {months}
-                                  </a>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
+                          <label htmlFor="workMonth" className='font--name'>Total Experience (Months)</label>
+                          <input type="number" className="form-control" id="workMonth" placeholder="Enter total experience months" value={projectDescription.workMonth} onChange={handleProjectChange} />
                         </div>
+                      
                       </div>
                     )}
                     <div className="form-group" style={{ marginTop: "15px" }}>
@@ -1800,7 +1751,7 @@ experienced  </label>
             </button>
           </div>
           <div className="modal-body">
-            <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
               <h4>Profile Summary</h4>
               <p className="text-muted">Give recruiters a brief overview of the highlights of your career, key achievements, and career goals to help recruiters know your profile better.</p>
               <div className="form-group" style={{ marginTop: "20px" }}>
@@ -2345,24 +2296,31 @@ Patent pending      </label>
     </div>
   </div>
 
-  <div className='row'>
-    <p style={{ marginLeft: '15px' }}>
-      Add details of certifications you have completed.
-    </p>
-  </div>
-
-  {addCertificate.map((cert, index) => (
-    <div key={index} className="card" style={{ marginBottom: '10px', padding: '10px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h6>{cert.name}</h6>
-        <button className="btn btn-secondary" onClick={certificateToggle}>
-          Edit
-        </button>
-      </div>
-      <p> <a href={cert.certificationUrl} target="_blank" rel="noopener noreferrer">{cert.certificationUrl}</a></p>
-      <p>Validity:{cert.certificationValidityStartMonth}/{cert.certificationValidityStartYear} to {cert.certificationValidityEndMonth}/{cert.certificationValidityEndYear}</p>
-    </div>
-  ))}
+  
+  {addCertificate.length === 0 && (
+        <div className='row'>
+          <p style={{ marginLeft: '15px' }}>
+          Add details of certifications you have completed.
+          </p>
+        </div>
+      )}
+      {addCertificate.map((certificate, index) => (
+        <div key={index} className="card" style={{ marginBottom: '15px', width: "92%", marginLeft: "30px" }}>
+          <div className="card-body">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+              <h6>{certificate.name}</h6>
+              </div>
+              <button className="btn btn-secondary" onClick={() => certificateToggle(index)}>
+                Edit
+              </button>
+            </div>
+            <p> <a href={certificate.certificationUrl} target="_blank" rel="noopener noreferrer">{certificate.certificationUrl}</a></p>
+      <p>Validity:{certificate.certificationValidityStartYear}/{certificate.certificationValidityStartMonth} to {certificate.certificationValidityEndYear}/{certificate.certificationValidityEndMonth}</p>
+          </div>
+        </div>
+      ))}
+ 
 </div>
 
 
@@ -2390,7 +2348,7 @@ Patent pending      </label>
             <div className="form-group">
               <label htmlFor="completionId">Completion ID</label>
               <input
-                type="text"
+                type="number"
                 id="completionId"
                 className="form-control"
                 value={certificationDetails.completionId}
@@ -2407,59 +2365,28 @@ Patent pending      </label>
                 onChange={handleCertificationChange}
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="certificationValidityStartMonth">Start Month</label>
-              <select
-                id="certificationValidityStartMonth"
-                className="form-control"
-                value={certificationDetails.certificationValidityStartMonth}
-                onChange={handleCertificationChange}
-              >
-                {monthOptions.map(month => (
-                  <option key={month.value} value={month.value}>{month.label}</option>
-                ))}
-              </select>
-            </div>
-            <div className="form-group">
-              <label htmlFor="certificationValidityStartYear">Start Year</label>
-              <select
-                id="certificationValidityStartYear"
-                className="form-control"
-                value={certificationDetails.certificationValidityStartYear}
-                onChange={handleCertificationChange}
-              >
-                {yearOptions.map(year => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
-            </div>
-            <div className="form-group">
-              <label htmlFor="certificationValidityEndMonth">End Month</label>
-              <select
-                id="certificationValidityEndMonth"
-                className="form-control"
-                value={certificationDetails.certificationValidityEndMonth}
-                onChange={handleCertificationChange}
-              >
-                {monthOptions.map(month => (
-                  <option key={month.value} value={month.value}>{month.label}</option>
-                ))}
-              </select>
-            </div>
-            <div className="form-group">
-              <label htmlFor="certificationValidityEndYear">End Year</label>
-              <select
-                id="certificationValidityEndYear"
-                className="form-control"
-                value={certificationDetails.certificationValidityEndYear}
-                onChange={handleCertificationChange}
-              >
-                {yearOptions.map(year => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
-            </div>
-
+            <div className='row' style={{ marginTop: '15px' }}>
+                <div className='col-6'>
+                  <label htmlFor="certificationValidityStartYear" className='font--name'>start Year</label>
+                  <input type="number" className="form-control" id="certificationValidityStartYear" placeholder="Enter total experience years" value={certificationDetails.certificationValidityStartYear} onChange={handleCertificationChange} />
+                </div>
+                <div className='col-6'>
+                  <label htmlFor="certificationValidityStartMonth" className='font--name'>start Month</label>
+                  <input type="number" className="form-control" id="certificationValidityStartMonth" placeholder="Enter total experience months" value={certificationDetails.certificationValidityStartMonth} onChange={handleCertificationChange} />
+                </div>
+              
+              </div>
+              <div className='row' style={{ marginTop: '15px' }}>
+                <div className='col-6'>
+                  <label htmlFor="certificationValidityEndYear" className='font--name'>end Year</label>
+                  <input type="number" className="form-control" id="certificationValidityEndYear" placeholder="Enter total experience years" value={certificationDetails.certificationValidityEndYear} onChange={handleCertificationChange} />
+                </div>
+                <div className='col-6'>
+                  <label htmlFor="certificationValidityEndMonth" className='font--name'>End month</label>
+                  <input type="number" className="form-control" id="certificationValidityEndMonth" placeholder="Enter total experience months" value={certificationDetails.certificationValidityEndMonth} onChange={handleCertificationChange} />
+                </div>
+              
+              </div>
             <div className="modal-footer" style={{ border: 'none' }}>
               <button type="submit" className="btn btn-primary">Save</button>
               <button type="button" className="btn btn-secondary" onClick={certificateToggle}>Close</button>

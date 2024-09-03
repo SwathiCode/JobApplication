@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import { setToken } from '../utils/User';
 const Login = () => {
   const [phoneno, setPhoneno] = useState('');
   const [showOTP, setShowOTP] = useState(false);
@@ -11,7 +11,7 @@ const Login = () => {
 
   const handlePhoneNumberChange = (e) => {
     const value = e.target.value;
-    if (/^\d*$/.test(value)) { // Only allow numeric input
+    if (/^\d*$/.test(value)) { 
       setPhoneno(value);
     }
   };
@@ -55,6 +55,8 @@ const Login = () => {
         otp: otpString,
       });
       if (response.status === 200) {
+        const token = response.data.token;
+        setToken(token);
         navigate('/profile');
       } else {
         alert('Invalid OTP');

@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Multiselect } from 'multiselect-react-dropdown';
+import Topbar from './Topbar';
+import './Requirement.css';
+
 function ProjectRequirement() {
     const data = [
         { country: 'India', id: 1 },
@@ -34,14 +37,18 @@ function ProjectRequirement() {
     });
 
     return (
-        <div className="container" ref={containerRef}>
-            <div className="column image-column">
+        <div>
+            <Topbar/>
+                
+        <div className=" container Cont-width" ref={containerRef}>
+
+            <div className="Column-width image--width">
                 <img
                     src="https://www.hindustantimes.com/ht-img/img/2024/01/27/900x1600/Beautiful_birds_1706331679357_1706331683807.jpg"
                     alt="Beautiful birds"
                 />
             </div>
-            <div className="column description-column">
+            <div className="Column-width description--width">
                 <div className="size">
                     <b>Tell us what you need done.</b>
                 </div>
@@ -49,24 +56,24 @@ function ProjectRequirement() {
                     We'll guide you to create the perfect brief. The more detail, the better.
                 </p>
 
-                <div className="textarea-container" >
+                <div className="textarea--width" >
                     <label htmlFor="projectName" className="form-label">
                         <b>Project Name</b>
                     </label>
                     <textarea
-                        className="form-control"
+                        className="form--width"
                         id="projectName"
                         rows="4"
                         onClick={() => handleSectionClick('projectName')}
                     ></textarea>
                 </div>
 
-                <div className="textarea-container" >
+                <div className="textarea--width" >
                     <label htmlFor="projectDescription" className="form-label">
                         <b>Project Description</b>
                     </label>
                     <textarea
-                        className="form-control"
+                        className="form--width"
                         id="projectDescription"
                         rows="4"
                         onClick={() => handleSectionClick('projectDescription')}
@@ -76,7 +83,7 @@ function ProjectRequirement() {
                 <div className="input-group mb-3" style={sectionStyle('fileUpload')}>
                     <input
                         type="file"
-                        className="form-control"
+                        className="form--width"
                         id="fileUpload"
                         onClick={() => handleSectionClick('fileUpload')}
                     />
@@ -352,46 +359,10 @@ function ProjectRequirement() {
                 </div>
             </div>
         </div>
+        </div>
     );
 }
 
 
 
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Navbar</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><hr class="dropdown-divider"/></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-          </ul>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled">Disabled</a>
-        </li>
-      </ul>
-      <form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-        <button class="btn btn-outline-success" type="submit">Next</button>
-      </form>
-    </div>
-  </div>
-</nav>
 export default ProjectRequirement;

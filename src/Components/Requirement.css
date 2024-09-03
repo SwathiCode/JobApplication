@@ -1,5 +1,5 @@
 
-.container {
+.Cont-width {
     display: flex;
     justify-content: space-between;
     align-items: flex-start; 
@@ -9,19 +9,19 @@
 }
 
 
-.column {
+.Column-width {
     flex: 1; 
     margin: 10px; 
 }
 
 
-.image-column img {
+.image--width img{
     width: 550px; 
     height: 500px; 
 }
 
 
-.description-column {
+.description--width {
     display: flex;
     flex-direction: column; 
     justify-content: center; 
@@ -29,12 +29,12 @@
 }
 
 
-.textarea-container {
+.textarea--width {
     margin: 20px 0; 
 }
 
 
-.form-control {
+.form--width {
     height: 30px; 
     width: 35%; 
     box-sizing: border-box; 
@@ -47,7 +47,7 @@
 }
 
 
-.submit-button {
+.submit--btn {
     height: 30px; 
     width: 70px;  
     background-color: deeppink; 
