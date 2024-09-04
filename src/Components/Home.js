@@ -128,31 +128,23 @@ const Home = () => {
       try {
         const response = await axios.post(
           "http://192.168.0.110:8080/api/job/search",
-          { title: searchTerm }
+          { 
+            title: searchTerm, 
+            jobTypeIds: selectedJobTypeIds, 
+            experienceLevelIds: selectedExperienceIds, 
+            jobCategoryIds: selectedJobIds, 
+            companyIds: selectedCompanyIds 
+          }
         );
-  
+    
         console.log("Response data:", response.data);
-  
+    
         setFilteredJobs(response.data); 
       } catch (error) {
         console.error("Error fetching jobs:", error);
       }
     };
-    const handleSearchChange = async () => {
-      try {
-        const response = await axios.post(
-          "http://192.168.0.110:8080/api/job/search",
-          { title: searchTitle,jobTypeIds: selectedJobTypeIds, experienceLevelIds: selectedExperienceIds,jobCategoryIds: selectedJobIds,companyIds: selectedCompanyIds },
-        );
-  
-        console.log("Response data:", response.data);
-  
-        setFilteredJobs(response.data); 
-      } catch (error) {
-        console.error("Error fetching jobs:", error);
-      }
-    };
-
+   
     const handleApplyChange = async () => {
       try {
         const response = await axios.post(
@@ -188,7 +180,7 @@ const Home = () => {
     }; 
     const handleKeyUp = (event) => {
       if (event.key === 'Enter') {
-        handleSearchChange();
+        handleSearch();
         event.target.blur();
       }
     };
@@ -602,7 +594,7 @@ Pixelz Studio
                 </svg>
               </div>
             </div>
-            <div className="row" style={{ marginTop: "20px" }}>
+            <div className="row" style={{ marginTop: "20px",marginRight:"4px" }}>
             <div className="col-4">
   <button type="button" className="box--width button--blue">
     {getExperienceLabel(job.experience.name)}
@@ -712,7 +704,7 @@ Pixelz Studio
                 </svg>
               </div>
             </div>
-            <div className="row" style={{ marginTop: "20px" }}>
+            <div className="row" style={{ marginTop: "20px",marginRight:"4px" }}>
             <div className="col-4">
   <button type="button" className="box--width button--blue">
     {getExperienceLabel(job.experience.name)}
@@ -818,7 +810,7 @@ Pixelz Studio
                 </svg>
               </div>
             </div>
-            <div className="row" style={{ marginTop: "20px" }}>
+            <div className="row" style={{ marginTop: "20px", marginRight:"4px" }}>
             <div className="col-4">
   <button type="button" className="box--width button--blue">
     {getExperienceLabel(job.experience.name)}

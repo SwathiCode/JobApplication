@@ -23,7 +23,7 @@ const SideNav = ({ onKeyUp, setFilteredJobs }) => {
     const [category, setCategory] = useState([]);
     const [company, setCompany] = useState([]);
     const [values, setValues] = useState([MIN, MAX]);
-    const [searchTitle, setSearchTitle] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [selectedJobTypeIds, setSelectedJobTypeIds] = useState([]);
     const [selectedExperienceIds, setSelectedExperienceIds] = useState([]);
     const [selectedJobIds, setSelectedJobIds] = useState([]);
@@ -113,21 +113,27 @@ const SideNav = ({ onKeyUp, setFilteredJobs }) => {
 
     };
    
-    const handleSearchChange = async () => {
-      try {
-        const response = await axios.post(
-          "http://192.168.0.110:8080/api/job/search",
-          { title: searchTitle,jobTypeIds: selectedJobTypeIds, experienceLevelIds: selectedExperienceIds,jobCategoryIds: selectedJobIds,companyIds: selectedCompanyIds },
-        );
-  
-        console.log("Response data:", response.data);
-  
-        setFilteredJobs(response.data); 
-      } catch (error) {
-        console.error("Error fetching jobs:", error);
-      }
-    };
- 
+    const handleSearch = async () => {
+        try {
+          const response = await axios.post(
+            "http://192.168.0.110:8080/api/job/search",
+            { 
+              title: searchTerm, 
+              jobTypeIds: selectedJobTypeIds, 
+              experienceLevelIds: selectedExperienceIds, 
+              jobCategoryIds: selectedJobIds, 
+              companyIds: selectedCompanyIds 
+            }
+          );
+      
+          console.log("Response data:", response.data);
+      
+          setFilteredJobs(response.data); 
+        } catch (error) {
+          console.error("Error fetching jobs:", error);
+        }
+      };
+      
    
     useEffect(() => {
       const range = rangeRef.current;
@@ -199,14 +205,15 @@ const SideNav = ({ onKeyUp, setFilteredJobs }) => {
           id="exampleInputEmail1"
           placeholder="Company, skill, tag..."
           style={{ width: "71%" }}
-          value={searchTitle}
-                  onChange={(e) => setSearchTitle(e.target.value)}
+          value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyUp={onKeyUp}
 
         />
-        <button type="button" className="btn btn-primary" style={{ marginLeft: "10px" }} onClick={handleSearchChange}>
+        <button type="button" className="btn btn-primary" style={{ marginLeft: "10px" }} onClick={handleSearch}>
           Search
         </button>
+        
       </div>
 
       <div className="row" style={{ marginTop: "15px" }}>

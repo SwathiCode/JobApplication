@@ -2,9 +2,12 @@ import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { setToken } from '../utils/User';
+import Coverletter from './Coverletter';
 const Login = () => {
   const [phoneno, setPhoneno] = useState('');
   const [showOTP, setShowOTP] = useState(false);
+  const [showModal, setShowModal] = useState(false); // State for modal visibility
+
   const [otp, setOtp] = useState(Array(4).fill(''));
   const otpRefs = useRef([]);
   const navigate = useNavigate();
@@ -16,6 +19,14 @@ const Login = () => {
     }
   };
 
+  const handleCloseModal = () => {
+    setShowModal(false); // Hide the modal
+  };
+
+  const handleUploadCoverLetter = () => {
+    // Handle the cover letter upload here
+    setShowModal(false); // Hide the modal after upload
+  };
   const handleOTPChange = (e, index) => {
     const newOtp = [...otp];
     newOtp[index] = e.target.value;
@@ -28,23 +39,25 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (phoneno.length === 10) {
-      try {
-        const response = await axios.post('http://192.168.0.169:8081/api/login', {
-          phoneno: phoneno,
-        });
-        if (response.status === 200) {
-          setShowOTP(true);
-        } else {
-          alert('Failed to send OTP');
-        }
-      } catch (error) {
-        console.error('There was an error sending the phone number!', error);
-        alert('There was an error sending the phone number!');
-      }
-    } else {
-      alert('Please enter a valid phone number');
-    }
+    setShowModal(true); // Show the modal on submit
+
+    // if (phoneno.length === 10) {
+    //   try {
+    //     const response = await axios.post('http://192.168.0.169:8081/api/login', {
+    //       phoneno: phoneno,
+    //     });
+    //     if (response.status === 200) {
+    //       setShowOTP(true);
+    //     } else {
+    //       alert('Failed to send OTP');
+    //     }
+    //   } catch (error) {
+    //     console.error('There was an error sending the phone number!', error);
+    //     alert('There was an error sending the phone number!');
+    //   }
+    // } else {
+    //   alert('Please enter a valid phone number');
+    // }
   };
 
   const handleOTPSubmit = async () => {
@@ -162,6 +175,11 @@ const Login = () => {
           </div>
         </div>
       </div>
+      <Coverletter
+        show={showModal}
+        handleClose={handleCloseModal}
+        handleUpload={handleUploadCoverLetter}
+      />
     </div>
   );
 };
